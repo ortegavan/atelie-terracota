@@ -1,0 +1,8 @@
+{
+  "name": "atelie-terracota",
+  "private": true,
+  "scripts": {
+    "dev:frontend": "pnpm --filter frontend run start",
+    "dev:backend": "pnpm --filter backend run start:dev"
+  }
+}
