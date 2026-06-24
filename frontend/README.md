@@ -1,59 +1,72 @@
-# Frontend
+# Ateliê Terracota — Frontend
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.0.
+SPA Angular 22 com formulário de pedidos de cerâmicas artesanais.
+Consome a API REST do `backend/`.
 
-## Development server
+## Pré-requisitos
 
-To start a local development server, run:
+- Node.js 18+
+- pnpm 8+
+- Backend rodando em `http://localhost:3000` (ver `backend/README.md`)
 
-```bash
-ng serve
-```
+## Rodando em desenvolvimento
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Execute a partir da **raiz do monorepo**:
 
 ```bash
-ng generate component component-name
+pnpm dev:frontend
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Ou diretamente:
 
 ```bash
-ng generate --help
+pnpm --filter frontend run start
 ```
 
-## Building
+Acesse `http://localhost:4200`. O Angular recarrega automaticamente ao salvar arquivos.
 
-To build the project run:
+## Build de produção
 
 ```bash
-ng build
+pnpm --filter frontend run build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Os artefatos são gerados em `frontend/dist/`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+## Testes
 
 ```bash
-ng test
+pnpm --filter frontend run test
 ```
 
-## Running end-to-end tests
+## Estrutura de pastas
 
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
+```
+frontend/src/app/
+├── app.ts                              # Componente raiz
+├── app.html                            # Template raiz
+├── app.scss                            # Estilos globais
+├── app.config.ts                       # Configuração da aplicação (providers)
+├── app.routes.ts                       # Rotas
+└── orders/
+    ├── orders.service.ts               # HttpClient: GET /products, POST /orders, GET /orders
+    └── orders-page/
+        ├── orders-page.component.ts    # Lógica: signals, computed, Reactive Forms
+        ├── orders-page.component.html  # Template: formulário + tabela + lista
+        └── orders-page.component.css   # Estilos do componente
 ```
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Convenções
 
-## Additional Resources
+- **Componentes standalone** — sem NgModules, sem `standalone: true` (padrão no Angular 22)
+- **Signals** para estado local (`signal()`, `computed()`)
+- **`inject()`** em vez de injeção por construtor
+- **Reactive Forms** em vez de template-driven
+- **Control flow nativo** (`@if`, `@for`) em vez de `*ngIf`, `*ngFor`
+- **Arquivos separados** para template (`.html`), componente (`.ts`) e estilos (`.css`)
+- Sem `ngClass` — usar bindings de `class`
+- Sem `ngStyle` — usar bindings de `style`
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+## Notas sobre o Angular 22
+
+- `provideHttpClient()` **não é necessário** no `app.config.ts` — o Angular 22 já o provê automaticamente.
