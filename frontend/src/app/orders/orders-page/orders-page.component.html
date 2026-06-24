@@ -1,0 +1,131 @@
+<main>
+  <h1>Ateliê Terracota</h1>
+
+  <section aria-labelledby="cliente-heading">
+    <h2 id="cliente-heading">Dados do cliente</h2>
+    <form [formGroup]="orderForm" novalidate>
+      <div class="field">
+        <label for="customerName">Nome</label>
+        <input
+          id="customerName"
+          type="text"
+          formControlName="customerName"
+          autocomplete="name"
+          aria-describedby="customerName-error"
+        />
+        @if (orderForm.controls.customerName.invalid && orderForm.controls.customerName.touched) {
+          <span id="customerName-error" class="error" role="alert">Nome é obrigatório.</span>
+        }
+      </div>
+      <div class="field">
+        <label for="customerEmail">E-mail</label>
+        <input
+          id="customerEmail"
+          type="email"
+          formControlName="customerEmail"
+          autocomplete="email"
+          aria-describedby="customerEmail-error"
+        />
+        @if (orderForm.controls.customerEmail.invalid && orderForm.controls.customerEmail.touched) {
+          <span id="customerEmail-error" class="error" role="alert">E-mail inválido.</span>
+        }
+      </div>
+    </form>
+  </section>
+
+  <section aria-labelledby="adicionar-heading">
+    <h2 id="adicionar-heading">Adicionar peça</h2>
+    <form [formGroup]="addItemForm" novalidate class="add-item-form">
+      <div class="field">
+        <label for="productId">Peça</label>
+        <select id="productId" formControlName="productId">
+          <option value="">Selecione uma peça</option>
+          @for (product of products(); track product.id) {
+            <option [value]="product.id">{{ product.name }} — R$ {{ product.price }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="quantity">Quantidade</label>
+        <input id="quantity" type="number" formControlName="quantity" min="1" />
+      </div>
+      <button type="button" (click)="addItem()" [disabled]="addItemForm.invalid">
+        Adicionar
+      </button>
+    </form>
+  </section>
+
+  @if (orderItems().length > 0) {
+    <section aria-labelledby="itens-heading">
+      <h2 id="itens-heading">Itens do pedido</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Peça</th>
+            <th scope="col">Qtd</th>
+            <th scope="col">Preço unit.</th>
+            <th scope="col">Subtotal</th>
+            <th scope="col"><span class="sr-only">Ações</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of orderItems(); track item.productId) {
+            <tr>
+              <td>{{ item.productName }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>R$ {{ item.unitPrice.toFixed(2) }}</td>
+              <td>R$ {{ (item.unitPrice * item.quantity).toFixed(2) }}</td>
+              <td>
+                <button type="button" (click)="removeItem(item.productId)">Remover</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="3"><strong>Total</strong></td>
+            <td><strong>R$ {{ total().toFixed(2) }}</strong></td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+
+      <button
+        type="button"
+        (click)="submitOrder()"
+        [disabled]="submitting() || orderForm.invalid"
+      >
+        {{ submitting() ? 'Enviando...' : 'Fazer pedido' }}
+      </button>
+    </section>
+  }
+
+  @if (submitted()) {
+    <p role="status" class="success">Pedido criado com sucesso!</p>
+  }
+
+  <section aria-labelledby="pedidos-heading">
+    <h2 id="pedidos-heading">Pedidos realizados</h2>
+    @if (orders().length === 0) {
+      <p>Nenhum pedido ainda.</p>
+    } @else {
+      <ul class="orders-list">
+        @for (order of orders(); track order.id) {
+          <li class="order-card">
+            <p>
+              <strong>{{ order.customerName }}</strong>
+              ({{ order.customerEmail }}) —
+              R$ {{ order.total }} —
+              {{ order.createdAt | date:'dd/MM/yyyy HH:mm' }}
+            </p>
+            <ul>
+              @for (item of order.items; track item.productId) {
+                <li>{{ item.productName }} × {{ item.quantity }}</li>
+              }
+            </ul>
+          </li>
+        }
+      </ul>
+    }
+  </section>
+</main>
